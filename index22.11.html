@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ИИ-Воронка для коучей и онлайн-курсов</title>
+<meta name="description" content="Персональный расчёт ИИ-воронки для коучей и авторов онлайн-курсов. Узнай сколько выручки ты теряешь без автоматизации.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --neon:#00FFB2;
+  --neon-glow:0 0 24px rgba(0,255,178,0.5),0 0 60px rgba(0,255,178,0.15);
+  --neon-dim:rgba(0,255,178,0.07);
+  --neon-border:rgba(0,255,178,0.2);
+  --pink:#FF2D78;
+  --bg:#080C0F;
+  --bg2:#0D1318;
+  --bg3:#111920;
+  --text:#E8F0F0;
+  --text-dim:#6B8A8A;
+  --mono:'Space Mono',monospace;
+  --head:'Syne',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  font-size:14px;
+  line-height:1.7;
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,255,178,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,178,0.025) 1px,transparent 1px);
+  background-size:40px 40px;
+  animation:gridPulse 10s ease-in-out infinite;
+  pointer-events:none;z-index:0;
+}
+@keyframes gridPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(8,12,15,0.95);
+  border-bottom:1px solid var(--neon-border);
+  backdrop-filter:blur(12px);
+}
+.nav-inner{
+  max-width:900px;margin:0 auto;padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-family:var(--head);font-size:18px;font-weight:800;color:var(--neon);letter-spacing:-0.5px;text-decoration:none}
+.nav-cta{
+  font-family:var(--mono);font-size:12px;
+  padding:9px 22px;
+  border:1px solid var(--neon);color:var(--neon);
+  background:transparent;cursor:pointer;text-decoration:none;display:inline-block;
+  transition:background .2s,box-shadow .2s;
+}
+.nav-cta:hover{background:var(--neon-dim);box-shadow:var(--neon-glow)}
+
+/* HERO */
+.hero{padding:72px 0 56px;text-align:center}
+.hero-tag{
+  display:inline-block;
+  font-size:11px;letter-spacing:2px;color:var(--neon);
+  border:1px solid var(--neon-border);padding:5px 16px;margin-bottom:24px;
+}
+.hero h1{
+  font-family:var(--head);font-size:clamp(28px,5vw,52px);font-weight:800;
+  line-height:1.1;letter-spacing:-1.5px;margin-bottom:18px;
+}
+.hero h1 span{color:var(--neon)}
+.hero p{color:var(--text-dim);font-size:14px;max-width:560px;margin:0 auto 32px}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-main{
+  font-family:var(--mono);font-size:13px;font-weight:700;
+  padding:14px 32px;
+  background:var(--neon);color:#080C0F;
+  border:none;cursor:pointer;text-decoration:none;display:inline-block;
+  transition:opacity .2s,box-shadow .2s;
+}
+.btn-main:hover{opacity:.88;box-shadow:var(--neon-glow)}
+.btn-ghost{
+  font-family:var(--mono);font-size:13px;
+  padding:14px 32px;
+  background:transparent;color:var(--text-dim);
+  border:1px solid rgba(255,255,255,0.12);cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.btn-ghost:hover{border-color:var(--neon-border);color:var(--text)}
+
+/* STATS STRIP */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--neon-border);
+  margin:0 0 64px;
+}
+.stat{
+  background:var(--bg2);padding:24px;text-align:center;
+}
+.stat-val{font-family:var(--head);font-size:32px;font-weight:800;color:var(--neon)}
+.stat-lbl{font-size:10px;color:var(--text-dim);margin-top:4px;letter-spacing:.5px}
+
+/* PAIN / SOL */
+.pain-section{padding:48px 0}
+.section-title{font-family:var(--head);font-size:clamp(20px,3vw,32px);font-weight:800;text-align:center;margin-bottom:8px}
+.section-sub{text-align:center;color:var(--text-dim);font-size:12px;margin-bottom:32px;letter-spacing:.5px}
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.pain-card{background:var(--bg2);border:1px solid var(--neon-border);padding:24px}
+.pain-card h3{font-family:var(--head);font-size:15px;font-weight:800;margin-bottom:16px;color:var(--text-dim)}
+.pain-card.sol h3{color:var(--neon)}
+.pain-item{font-size:12px;color:var(--text-dim);padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.5}
+.pain-card.sol .pain-item{color:var(--text)}
+.pain-item:last-child{border-bottom:none}
+
+/* TABS */
+.tabs-section{padding:48px 0}
+.tabs-nav{
+  display:flex;gap:0;
+  border-bottom:1px solid var(--neon-border);
+  margin-bottom:0;overflow-x:auto;
+}
+.tab-btn{
+  font-family:var(--mono);font-size:12px;
+  padding:12px 20px;white-space:nowrap;
+  background:transparent;color:var(--text-dim);
+  border:none;border-bottom:2px solid transparent;
+  margin-bottom:-1px;cursor:pointer;
+  transition:color .2s,border-color .2s;
+}
+.tab-btn.active{color:var(--neon);border-bottom-color:var(--neon)}
+.tab-panel{display:none;padding:28px 0}
+.tab-panel.active{display:block}
+
+/* QUIZ */
+.quiz-progress{height:2px;background:rgba(0,255,178,0.1);margin-bottom:24px}
+.quiz-bar{height:2px;background:var(--neon);transition:width .4s cubic-bezier(.4,0,.2,1)}
+.qz-q{font-family:var(--head);font-size:18px;font-weight:700;margin-bottom:18px}
+.qz-opts{display:flex;flex-direction:column;gap:10px}
+.qz-opt{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 16px;
+  background:var(--bg2);border:1px solid var(--neon-border);
+  cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--text);
+  transition:border-color .15s,background .15s,transform .1s;
+  user-select:none;-webkit-user-select:none;
+  position:relative;overflow:hidden;line-height:1.5;
+}
+.qz-opt:hover{border-color:var(--neon);background:var(--neon-dim);transform:translateX(4px)}
+.qz-opt.selected{border-color:var(--neon);background:rgba(0,255,178,0.09);color:var(--neon);transform:translateX(6px)}
+.qz-opt.selected::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,255,178,0.12),transparent);
+  animation:qscan .7s ease forwards;
+}
+@keyframes qscan{from{left:-100%}to{left:100%}}
+.qz-k{font-size:11px;color:var(--neon);min-width:16px;margin-top:1px;font-weight:700}
+.qz-step{display:none}
+.qz-step.active{display:block;animation:qsi .4s cubic-bezier(.34,1.4,.64,1) both}
+@keyframes qsi{from{opacity:0;transform:translateX(24px) scale(.97)}to{opacity:1;transform:none}}
+.qz-result{display:none}
+.qz-result.show{display:block;animation:qrv .5s cubic-bezier(.34,1.2,.64,1) both}
+@keyframes qrv{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.qz-res-box{
+  background:var(--bg2);border:1px solid var(--neon);
+  padding:28px;margin-top:4px;
+}
+.qz-ri{font-size:36px;animation:qib .5s .1s cubic-bezier(.34,1.8,.64,1) both}
+@keyframes qib{from{opacity:0;transform:scale(0) rotate(-15deg)}to{opacity:1;transform:none}}
+.qz-rt{font-family:var(--head);font-size:22px;font-weight:800;color:var(--neon);margin:12px 0 8px}
+.qz-rd{font-size:12px;color:var(--text-dim);margin-bottom:16px;max-width:520px;line-height:1.6}
+.qz-feats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.qz-feat{font-size:11px;padding:4px 12px;border:1px solid var(--neon-border);color:var(--neon)}
+
+/* CALC */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.calc-field label{display:block;font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:.8px}
+.calc-field input{
+  width:100%;background:var(--bg2);border:1px solid var(--neon-border);
+  color:var(--text);font-family:var(--mono);font-size:13px;
+  padding:10px 14px;outline:none;transition:border-color .2s;
+  -moz-appearance:textfield;
+}
+.calc-field input::-webkit-outer-spin-button,
+.calc-field input::-webkit-inner-spin-button{-webkit-appearance:none}
+.calc-field input:focus{border-color:var(--neon)}
+.calc-btn{
+  width:100%;padding:14px;
+  background:var(--neon);color:#080C0F;
+  font-family:var(--head);font-weight:800;font-size:14px;
+  border:none;cursor:pointer;margin-bottom:20px;
+  transition:opacity .2s,box-shadow .2s;
+}
+.calc-btn:hover{opacity:.88;box-shadow:var(--neon-glow)}
+.calc-results{display:none;grid-template-columns:repeat(3,1fr);gap:12px}
+.calc-results.show{display:grid;animation:qrv .4s cubic-bezier(.34,1.2,.64,1) both}
+.calc-card{
+  background:var(--bg2);border:1px solid var(--neon-border);
+  padding:16px;text-align:center;
+}
+.calc-card.highlight{border-color:var(--neon);box-shadow:var(--neon-glow)}
+.calc-val{font-family:var(--head);font-size:22px;font-weight:800;color:var(--neon)}
+.calc-lbl{font-size:9px;color:var(--text-dim);margin-top:4px;letter-spacing:.5px}
+
+/* FUNNEL */
+.funnel-stages{display:flex;flex-direction:column;gap:10px}
+.f-stage{display:grid;grid-template-columns:110px 1fr 140px;gap:12px;align-items:center}
+.f-label{font-size:11px;color:var(--text-dim);text-align:right}
+.f-bar-wrap{height:42px;display:flex;align-items:center}
+.f-bar{
+  height:100%;
+  border-left:3px solid var(--neon);
+  background:var(--neon-dim);
+  display:flex;align-items:center;padding:0 14px;
+  font-family:var(--head);font-size:12px;font-weight:700;color:var(--neon);
+  position:relative;overflow:hidden;
+  animation:barIn .7s cubic-bezier(.34,1.2,.64,1) both;
+}
+.f-bar::after{
+  content:'';position:absolute;top:0;right:-1px;width:0;height:0;
+  border-top:21px solid transparent;
+  border-bottom:21px solid transparent;
+  border-left:14px solid var(--bg);
+}
+@keyframes barIn{from{width:0;opacity:0}to{opacity:1}}
+.f-ai{
+  font-size:10px;color:var(--neon);
+  border:1px solid var(--neon-border);
+  padding:4px 8px;line-height:1.4;
+}
+.f-arrow{text-align:center;color:var(--neon-border);font-size:18px;padding:2px 0;line-height:1}
+
+/* LEAD FORM */
+.lead-section{
+  padding:64px 0;
+  border-top:1px solid var(--neon-border);
+}
+.lead-box{
+  background:var(--bg2);
+  border:1px solid var(--neon-border);
+  padding:40px;
+  max-width:600px;margin:0 auto;
+  position:relative;overflow:hidden;
+}
+.lead-box::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,255,178,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.lead-box h2{font-family:var(--head);font-size:24px;font-weight:800;margin-bottom:8px}
+.lead-box p{color:var(--text-dim);font-size:12px;margin-bottom:28px}
+.lead-form{display:flex;flex-direction:column;gap:14px}
+.lead-field label{display:block;font-size:10px;color:var(--text-dim);margin-bottom:6px;letter-spacing:.8px}
+.lead-field input,.lead-field select{
+  width:100%;background:var(--bg);border:1px solid var(--neon-border);
+  color:var(--text);font-family:var(--mono);font-size:13px;
+  padding:12px 16px;outline:none;transition:border-color .2s;
+  appearance:none;-webkit-appearance:none;
+}
+.lead-field input:focus,.lead-field select:focus{border-color:var(--neon)}
+.lead-field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300FFB2' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;cursor:pointer;
+}
+.lead-field select option{background:var(--bg2)}
+.lead-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lead-agree{display:flex;align-items:flex-start;gap:10px;margin-top:4px}
+.lead-agree input[type=checkbox]{
+  width:16px;height:16px;min-width:16px;
+  border:1px solid var(--neon-border);background:var(--bg);
+  appearance:none;-webkit-appearance:none;cursor:pointer;
+  position:relative;margin-top:2px;
+}
+.lead-agree input[type=checkbox]:checked{background:var(--neon)}
+.lead-agree input[type=checkbox]:checked::after{
+  content:'✓';position:absolute;top:-1px;left:2px;
+  font-size:11px;color:#080C0F;font-weight:700;
+}
+.lead-agree label{font-size:11px;color:var(--text-dim);cursor:pointer;line-height:1.5}
+.lead-agree a{color:var(--neon);text-decoration:none}
+.lead-submit{
+  width:100%;padding:16px;
+  background:var(--neon);color:#080C0F;
+  font-family:var(--head);font-weight:800;font-size:15px;
+  border:none;cursor:pointer;margin-top:6px;
+  transition:opacity .2s,box-shadow .2s;
+}
+.lead-submit:hover{opacity:.88;box-shadow:var(--neon-glow)}
+.lead-submit:disabled{opacity:.5;cursor:not-allowed}
+.lead-success{
+  display:none;text-align:center;padding:32px 0;
+  animation:qrv .5s cubic-bezier(.34,1.2,.64,1) both;
+}
+.lead-success.show{display:block}
+.lead-success-icon{font-size:48px;margin-bottom:16px}
+.lead-success h3{font-family:var(--head);font-size:20px;font-weight:800;color:var(--neon);margin-bottom:8px}
+.lead-success p{font-size:12px;color:var(--text-dim)}
+.lead-benefits{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.lead-benefit{font-size:12px;color:var(--text-dim)}
+.lead-benefit span{color:var(--neon);margin-right:6px}
+
+/* PROGRAM */
+.program-section{padding:48px 0}
+.program-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.program-card{
+  background:var(--bg2);border:1px solid var(--neon-border);
+  padding:20px;
+  transition:border-color .2s,transform .2s;
+}
+.program-card:hover{border-color:var(--neon);transform:translateY(-2px)}
+.prog-num{font-size:11px;color:var(--neon-border);font-weight:700;margin-bottom:8px;letter-spacing:1px}
+.prog-title{font-family:var(--head);font-size:14px;font-weight:800;margin-bottom:8px}
+.prog-desc{font-size:11px;color:var(--text-dim);line-height:1.6}
+
+/* FOOTER */
+footer{
+  padding:32px 0;border-top:1px solid var(--neon-border);
+  text-align:center;font-size:11px;color:var(--text-dim);
+}
+footer a{color:var(--neon);text-decoration:none}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .pain-grid{grid-template-columns:1fr}
+  .calc-grid{grid-template-columns:1fr}
+  .calc-results.show{grid-template-columns:1fr 1fr}
+  .lead-row{grid-template-columns:1fr}
+  .f-stage{grid-template-columns:80px 1fr;gap:8px}
+  .f-ai{display:none}
+  .stats{grid-template-columns:1fr}
+  .hero h1{font-size:26px;letter-spacing:-0.5px}
+  .lead-box{padding:24px 20px}
+}
+
+/* SCROLL ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.fade-in.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">ИИ&#8209;Воронка</a>
+    <a href="#lead-form" class="nav-cta">Получить расчёт →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-tag">ДЛЯ КОУЧЕЙ И АВТОРОВ ОНЛАЙН-КУРСОВ</div>
+    <h1>Автоматизируй продажи<br>с помощью <span>ИИ-воронки</span></h1>
+    <p>Узнай точно, сколько лидов и выручки ты теряешь каждый месяц без автоматизации — и получи готовую схему ИИ-воронки под твой продукт.</p>
+    <div class="hero-btns">
+      <a href="#tabs" class="btn-main">Пройти квиз бесплатно →</a>
+      <a href="#lead-form" class="btn-ghost">Получить расчёт</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="wrap">
+  <div class="stats fade-in">
+    <div class="stat"><div class="stat-val">×4.8</div><div class="stat-lbl">СРЕДНИЙ РОСТ КОНВЕРСИИ</div></div>
+    <div class="stat"><div class="stat-val">−73%</div><div class="stat-lbl">ВРЕМЯ НА РУТИНУ</div></div>
+    <div class="stat"><div class="stat-val">24/7</div><div class="stat-lbl">РАБОТА ВОРОНКИ</div></div>
+  </div>
+</div>
+
+<!-- PAIN / SOLUTION -->
+<section class="pain-section">
+  <div class="wrap">
+    <h2 class="section-title fade-in">Почему коучи теряют деньги</h2>
+    <p class="section-sub fade-in">БЕЗ АВТОМАТИЗАЦИИ VS С ИИ-ВОРОНКОЙ</p>
+    <div class="pain-grid fade-in">
+      <div class="pain-card">
+        <h3>🔴 Сейчас (вручную)</h3>
+        <div class="pain-item">Вручную отвечаешь на однотипные вопросы часами</div>
+        <div class="pain-item">Лиды «остывают», пока ждут твоего ответа</div>
+        <div class="pain-item">Нет квалификации — тратишь время на нецелевых</div>
+        <div class="pain-item">Конверсия 1–3% с холодного трафика</div>
+        <div class="pain-item">Без тебя — воронка не работает</div>
+      </div>
+      <div class="pain-card sol">
+        <h3>✅ С ИИ-воронкой</h3>
+        <div class="pain-item">ИИ квалифицирует и прогревает лидов 24/7</div>
+        <div class="pain-item">Мгновенные ответы, персонализация, сегментация</div>
+        <div class="pain-item">Только целевые лиды доходят до тебя</div>
+        <div class="pain-item">Конверсия 8–15% с прогретой аудитории</div>
+        <div class="pain-item">Воронка работает пока ты спишь</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TABS: QUIZ / CALC / FUNNEL -->
+<section id="tabs" class="tabs-section">
+  <div class="wrap">
+    <h2 class="section-title fade-in">Персональный расчёт</h2>
+    <p class="section-sub fade-in">КВИЗ · КАЛЬКУЛЯТОР · СХЕМА ВОРОНКИ</p>
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="showTab('quiz',this)">Квиз — подбор типа</button>
+      <button class="tab-btn" id="calc-tab-btn" onclick="showTab('calc',this)">Калькулятор выручки</button>
+      <button class="tab-btn" onclick="showTab('funnel',this)">Схема этапов</button>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="tab-quiz" class="tab-panel active">
+      <div class="quiz-progress"><div class="quiz-bar" id="qz-progress" style="width:33%"></div></div>
+
+      <div class="qz-step active" id="qz-step1">
+        <div class="qz-q">1 / 3 &nbsp;—&nbsp; Как сейчас устроена твоя воронка?</div>
+        <div class="qz-opts">
+          <div class="qz-opt" onclick="qzPick(this,1,'A')"><span class="qz-k">A</span><span>Всё вручную: переписка, звонки, договорённости лично</span></div>
+          <div class="qz-opt" onclick="qzPick(this,1,'B')"><span class="qz-k">B</span><span>Есть базовый чат-бот или авторассылки, но продажи — вручную</span></div>
+          <div class="qz-opt" onclick="qzPick(this,1,'C')"><span class="qz-k">C</span><span>Есть квалификация лидов, но нет персонализации и прогрева</span></div>
+        </div>
+      </div>
+
+      <div class="qz-step" id="qz-step2">
+        <div class="qz-q">2 / 3 &nbsp;—&nbsp; Какой средний чек твоего продукта?</div>
+        <div class="qz-opts">
+          <div class="qz-opt" onclick="qzPick(this,2,'A')"><span class="qz-k">A</span><span>До 50 000 ₽ — групповые форматы, записи курсов</span></div>
+          <div class="qz-opt" onclick="qzPick(this,2,'B')"><span class="qz-k">B</span><span>50 000 – 200 000 ₽ — интенсивы, мини-группы</span></div>
+          <div class="qz-opt" onclick="qzPick(this,2,'C')"><span class="qz-k">C</span><span>200 000 ₽+ — индивидуальное сопровождение, менторство</span></div>
+        </div>
+      </div>
+
+      <div class="qz-step" id="qz-step3">
+        <div class="qz-q">3 / 3 &nbsp;—&nbsp; Главная цель автоматизации?</div>
+        <div class="qz-opts">
+          <div class="qz-opt" onclick="qzPick(this,3,'A')"><span class="qz-k">A</span><span>Снять рутину — отвечать на вопросы, отправлять материалы</span></div>
+          <div class="qz-opt" onclick="qzPick(this,3,'B')"><span class="qz-k">B</span><span>Прогревать аудиторию и повышать конверсию в заявку</span></div>
+          <div class="qz-opt" onclick="qzPick(this,3,'C')"><span class="qz-k">C</span><span>Квалифицировать лидов и доводить до сделки без звонков</span></div>
+        </div>
+      </div>
+
+      <div class="qz-result" id="qz-result">
+        <div class="qz-res-box">
+          <div class="qz-ri" id="qz-ri">🤖</div>
+          <div class="qz-rt" id="qz-rt">Тип воронки</div>
+          <div class="qz-rd" id="qz-rd">Описание</div>
+          <div class="qz-feats" id="qz-rf"></div>
+          <a href="#lead-form" class="btn-main" style="display:inline-block">Получить полный план →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALC -->
+    <div id="tab-calc" class="tab-panel">
+      <div class="calc-grid">
+        <div class="calc-field"><label>ТРАФИК В МЕСЯЦ (человек)</label><input type="number" id="ci-traffic" value="1000" min="100"></div>
+        <div class="calc-field"><label>СРЕДНИЙ ЧЕК (₽)</label><input type="number" id="ci-check" value="80000" min="5000"></div>
+        <div class="calc-field"><label>ТЕКУЩАЯ КОНВЕРСИЯ (%)</label><input type="number" id="ci-conv" value="2" min="0.1" max="30" step="0.1"></div>
+        <div class="calc-field"><label>ПРИРОСТ КОНВЕРСИИ С ИИ (%)</label><input type="number" id="ci-boost" value="4" min="0.5" max="20" step="0.5"></div>
+      </div>
+      <button class="calc-btn" onclick="calcFunnel()">Рассчитать ИИ-воронку →</button>
+      <div class="calc-results" id="calc-out">
+        <div class="calc-card"><div class="calc-val" id="co-leads">—</div><div class="calc-lbl">ЛИДОВ СЕЙЧАС / МЕС</div></div>
+        <div class="calc-card"><div class="calc-val" id="co-leads-ai">—</div><div class="calc-lbl">ЛИДОВ С ИИ / МЕС</div></div>
+        <div class="calc-card"><div class="calc-val" id="co-delta">—</div><div class="calc-lbl">ДОППРОДАЖ / МЕС</div></div>
+        <div class="calc-card"><div class="calc-val" id="co-rev">—</div><div class="calc-lbl">ВЫРУЧКА СЕЙЧАС / МЕС</div></div>
+        <div class="calc-card"><div class="calc-val" id="co-rev-ai">—</div><div class="calc-lbl">ВЫРУЧКА С ИИ / МЕС</div></div>
+        <div class="calc-card highlight"><div class="calc-val" id="co-gain">—</div><div class="calc-lbl">ПРИРОСТ ВЫРУЧКИ / МЕС</div></div>
+      </div>
+      <div id="calc-cta" style="display:none;margin-top:20px;text-align:center">
+        <a href="#lead-form" class="btn-main">Получить детальный план →</a>
+      </div>
+    </div>
+
+    <!-- FUNNEL SCHEME -->
+    <div id="tab-funnel" class="tab-panel">
+      <div class="funnel-stages" id="funnel-stages"></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET / PROGRAM -->
+<section class="program-section">
+  <div class="wrap">
+    <h2 class="section-title fade-in">Что входит в ИИ-воронку</h2>
+    <p class="section-sub fade-in">ПОЛНАЯ СИСТЕМА ЗА 2–4 НЕДЕЛИ</p>
+    <div class="program-grid">
+      <div class="program-card fade-in">
+        <div class="prog-num">01</div>
+        <div class="prog-title">ИИ-Квалификатор</div>
+        <div class="prog-desc">Бот задаёт 5–7 вопросов, определяет боль и готовность, сегментирует лида. Только целевые — тебе.</div>
+      </div>
+      <div class="program-card fade-in">
+        <div class="prog-num">02</div>
+        <div class="prog-title">Прогрев-сценарий</div>
+        <div class="prog-desc">Персональные сообщения на основе ответов квалификатора. Контент по болям, кейсы, отзывы — автоматически.</div>
+      </div>
+      <div class="program-card fade-in">
+        <div class="prog-num">03</div>
+        <div class="prog-title">ИИ-Чат поддержки</div>
+        <div class="prog-desc">Отвечает на вопросы о продукте 24/7. Знает твою программу, цены, кейсы. Закрывает возражения.</div>
+      </div>
+      <div class="program-card fade-in">
+        <div class="prog-num">04</div>
+        <div class="prog-title">CRM-интеграция</div>
+        <div class="prog-desc">Каждый лид автоматически попадает в CRM с тегами, скорингом и историей переписки.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD FORM -->
+<section id="lead-form" class="lead-section">
+  <div class="wrap">
+    <div class="lead-box fade-in">
+      <div id="lead-form-inner">
+        <h2>Получи персональный расчёт<br><span style="color:var(--neon)">ИИ-воронки</span> бесплатно</h2>
+        <p>Заполни форму — в течение 24 часов пришлём схему воронки и расчёт потенциальной выручки специально под твою нишу.</p>
+
+        <div class="lead-benefits">
+          <div class="lead-benefit"><span>→</span>Схема ИИ-воронки под твой продукт</div>
+          <div class="lead-benefit"><span>→</span>Расчёт ROI автоматизации</div>
+          <div class="lead-benefit"><span>→</span>Список инструментов и их стоимость</div>
+          <div class="lead-benefit"><span>→</span>Бесплатная консультация 30 мин</div>
+        </div>
+
+        <br>
+
+        <div class="lead-form" id="the-lead-form">
+          <div class="lead-row">
+            <div class="lead-field">
+              <label>ИМЯ *</label>
+              <input type="text" id="lf-name" placeholder="Твоё имя" required>
+            </div>
+            <div class="lead-field">
+              <label>TELEGRAM / ТЕЛЕФОН *</label>
+              <input type="text" id="lf-contact" placeholder="@username или +7..." required>
+            </div>
+          </div>
+          <div class="lead-field">
+            <label>НИША / ЧЕМ ЗАНИМАЕШЬСЯ *</label>
+            <input type="text" id="lf-niche" placeholder="Например: коучинг по карьере, курс по инвестициям..." required>
+          </div>
+          <div class="lead-row">
+            <div class="lead-field">
+              <label>СРЕДНИЙ ЧЕК</label>
+              <select id="lf-check">
+                <option value="">Выбери диапазон</option>
+                <option value="до 50К">До 50 000 ₽</option>
+                <option value="50-200К">50 000 – 200 000 ₽</option>
+                <option value="200К+">200 000 ₽+</option>
+              </select>
+            </div>
+            <div class="lead-field">
+              <label>ТРАФИК В МЕС.</label>
+              <select id="lf-traffic">
+                <option value="">Выбери диапазон</option>
+                <option value="до 500">До 500 чел.</option>
+                <option value="500-5000">500 – 5 000 чел.</option>
+                <option value="5000+">5 000+ чел.</option>
+              </select>
+            </div>
+          </div>
+          <div class="lead-agree">
+            <input type="checkbox" id="lf-agree">
+            <label for="lf-agree">Согласен с <a href="#" onclick="return false">политикой конфиденциальности</a> и обработкой персональных данных</label>
+          </div>
+          <button class="lead-submit" id="lead-submit-btn" onclick="submitLead()">Получить персональный расчёт →</button>
+        </div>
+      </div>
+
+      <div class="lead-success" id="lead-success">
+        <div class="lead-success-icon">✅</div>
+        <h3>Заявка принята!</h3>
+        <p>Спасибо! В течение 24 часов пришлём персональную схему ИИ-воронки и расчёт выручки в Telegram или по телефону.</p>
+        <br>
+        <p style="color:var(--text-dim);font-size:11px">Пока ждёшь — пройди квиз выше и рассчитай потенциальную выручку в калькуляторе 👆</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <p>© 2025 ИИ-Воронка &nbsp;·&nbsp; <a href="mailto:hello@example.com">hello@example.com</a> &nbsp;·&nbsp; <a href="https://t.me/your_username" target="_blank">Telegram</a></p>
+    <p style="margin-top:8px;font-size:10px;color:rgba(107,138,138,0.6)">Все расчёты — приблизительные и зависят от ниши, продукта и трафика.</p>
+  </div>
+</footer>
+
+<script>
+// QUIZ
+var qzAns = {};
+var QZ_RES = {
+  A:{
+    icon:'🤖',
+    title:'ИИ-Ассистент + Автоответчик',
+    desc:'Ты на старте автоматизации. Первый шаг — ИИ-бот, который берёт на себя рутину: FAQ, первичная квалификация, отправка материалов. Освободит 3–4 часа в день и увеличит скорость ответа до секунд.',
+    feats:['Чат-бот 24/7','Авто-FAQ','Отправка лид-магнита','Первичный скрининг','Интеграция с мессенджерами']
+  },
+  B:{
+    icon:'🎯',
+    title:'ИИ-Воронка прогрева',
+    desc:'У тебя есть база — нужно её конвертировать. ИИ-воронка с персонализированным прогревом: серия сообщений по болям клиента, кейсы, триггеры на готовность купить — всё автоматически.',
+    feats:['Персонализация по ответам','Прогрев через контент','Триггерные сценарии','Скоринг лидов','А/Б-тестирование сообщений']
+  },
+  C:{
+    icon:'💼',
+    title:'ИИ-Квалификатор + Продажи',
+    desc:'Для дорогих продуктов нужна точная квалификация. ИИ проводит диагностическую беседу, сегментирует лидов по готовности и передаёт тёплых — тебе остаётся только закрыть сделку.',
+    feats:['Диагностическая беседа','Скоринг по 5 критериям','Авто-запись на звонок','CRM-интеграция','ИИ-дожим сделки']
+  }
+};
+
+function qzPick(el, step, val) {
+  el.parentElement.querySelectorAll('.qz-opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  qzAns[step] = val;
+  var pct = {1:33,2:66,3:100};
+  document.getElementById('qz-progress').style.width = (pct[step]||33) + '%';
+  setTimeout(function() {
+    if (step < 3) { qzGoStep(step + 1); } else { qzShowRes(); }
+  }, 450);
+}
+
+function qzGoStep(n) {
+  document.querySelectorAll('.qz-step').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('qz-step' + n).classList.add('active');
+}
+
+function qzShowRes() {
+  var cnt = {A:0,B:0,C:0};
+  Object.values(qzAns).forEach(function(v){ if(cnt[v]!==undefined) cnt[v]++; });
+  var winner = Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; })[0];
+  var r = QZ_RES[winner] || QZ_RES['B'];
+  document.getElementById('qz-ri').textContent = r.icon;
+  document.getElementById('qz-rt').textContent = r.title;
+  document.getElementById('qz-rd').textContent = r.desc;
+  document.getElementById('qz-rf').innerHTML = r.feats.map(function(f){ return '<span class="qz-feat">'+f+'</span>'; }).join('');
+  var res = document.getElementById('qz-result');
+  res.classList.add('show');
+  setTimeout(function(){ res.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+
+// CALC
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + ' М';
+  if (n >= 1000) return Math.round(n/1000) + ' К';
+  return String(Math.round(n));
+}
+
+function calcFunnel() {
+  var traffic = parseFloat(document.getElementById('ci-traffic').value) || 1000;
+  var check   = parseFloat(document.getElementById('ci-check').value) || 80000;
+  var conv    = parseFloat(document.getElementById('ci-conv').value) || 2;
+  var boost   = parseFloat(document.getElementById('ci-boost').value) || 4;
+
+  var leadsNow = Math.round(traffic * conv / 100);
+  var leadsAI  = Math.round(traffic * (conv + boost) / 100);
+  var delta    = leadsAI - leadsNow;
+  var revNow   = leadsNow * check;
+  var revAI    = leadsAI * check;
+  var gain     = revAI - revNow;
+
+  document.getElementById('co-leads').textContent    = leadsNow;
+  document.getElementById('co-leads-ai').textContent = leadsAI;
+  document.getElementById('co-delta').textContent    = '+' + delta;
+  document.getElementById('co-rev').textContent      = fmt(revNow) + ' ₽';
+  document.getElementById('co-rev-ai').textContent   = fmt(revAI) + ' ₽';
+  document.getElementById('co-gain').textContent     = '+' + fmt(gain) + ' ₽';
+
+  var out = document.getElementById('calc-out');
+  out.classList.add('show');
+  document.getElementById('calc-cta').style.display = 'block';
+}
+
+// TABS
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'funnel') renderFunnel();
+}
+
+// FUNNEL
+var funnelData = [
+  {label:'1. Трафик',       pct:100, ai:'Реклама / SEO / Соцсети'},
+  {label:'2. Лид-магнит',   pct:60,  ai:'ИИ-бот выдаёт PDF / видео'},
+  {label:'3. Квалификация', pct:38,  ai:'ИИ задаёт 5–7 вопросов'},
+  {label:'4. Прогрев',      pct:22,  ai:'Персональная серия сообщений'},
+  {label:'5. Заявка',       pct:11,  ai:'Авто-запись на звонок / оплата'},
+  {label:'6. Сделка',       pct:5,   ai:'CRM + ИИ-дожим + онбординг'}
+];
+
+function renderFunnel() {
+  var c = document.getElementById('funnel-stages');
+  if (c.children.length > 0) return;
+  funnelData.forEach(function(s, i) {
+    if (i > 0) {
+      var arr = document.createElement('div');
+      arr.className = 'f-arrow';
+      arr.innerHTML = '↓';
+      c.appendChild(arr);
+    }
+    var row = document.createElement('div');
+    row.className = 'f-stage';
+    row.innerHTML =
+      '<div class="f-label">' + s.label + '</div>' +
+      '<div class="f-bar-wrap">' +
+        '<div class="f-bar" style="width:' + s.pct + '%;animation-delay:' + (i * 0.1) + 's">' + s.pct + '%</div>' +
+      '</div>' +
+      '<div class="f-ai">' + s.ai + '</div>';
+    c.appendChild(row);
+  });
+}
+
+// LEAD FORM
+function submitLead() {
+  var name    = (document.getElementById('lf-name').value || '').trim();
+  var contact = (document.getElementById('lf-contact').value || '').trim();
+  var niche   = (document.getElementById('lf-niche').value || '').trim();
+  var agree   = document.getElementById('lf-agree').checked;
+
+  if (!name) { alert('Укажи своё имя'); return; }
+  if (!contact) { alert('Укажи Telegram или телефон для связи'); return; }
+  if (!niche) { alert('Расскажи коротко о своей нише'); return; }
+  if (!agree) { alert('Необходимо согласие на обработку данных'); return; }
+
+  var btn = document.getElementById('lead-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Отправляем...';
+
+  // Здесь подключи свой webhook — Telegram Bot, Make, n8n, Formspree и т.д.
+  // Пример для Formspree: fetch('https://formspree.io/f/YOUR_ID', { method:'POST', ... })
+  // Пример для Telegram Bot:
+  // var TOKEN = 'YOUR_BOT_TOKEN';
+  // var CHAT_ID = 'YOUR_CHAT_ID';
+  // var text = '🆕 Новая заявка!\n...'
+  // fetch('https://api.telegram.org/bot' + TOKEN + '/sendMessage', { method:'POST', ... })
+
+  var check   = document.getElementById('lf-check').value || 'не указан';
+  var traffic = document.getElementById('lf-traffic').value || 'не указан';
+
+  // Логируем в консоль для теста:
+  console.log('LEAD:', {name:name, contact:contact, niche:niche, check:check, traffic:traffic});
+
+  // Имитация отправки (замени на реальный запрос выше)
+  setTimeout(function() {
+    document.getElementById('the-lead-form').style.display = 'none';
+    document.getElementById('lead-success').classList.add('show');
+  }, 900);
+}
+
+// SCROLL ANIMATIONS
+function checkFade() {
+  document.querySelectorAll('.fade-in').forEach(function(el) {
+    var rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 60) {
+      el.classList.add('visible');
+    }
+  });
+}
+window.addEventListener('scroll', checkFade, {passive:true});
+checkFade();
+</script>
+</body>
+</html>
